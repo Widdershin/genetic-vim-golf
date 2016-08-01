@@ -6,7 +6,10 @@ import assert from 'assert';
 const TESTS = [
   {input: 'ab', output: 'ba', expected: 'xp'},
   {input: 'ab', output: 'b', expected: 'x'},
-  {input: 'ab', output: 'baa', expected: 'xpp'}
+  {input: 'ab', output: 'baa', expected: 'xpp'},
+  {input: 'ab', output: 'baaa', expected: 'xppp'},
+  {input: 'aaa', output: '', expected: 'xxx'},
+  {input: 'ba', output: 'abbb', expected: 'xppp'}
 ];
 
 describe('golf', () => {
