@@ -1,19 +1,12 @@
 import _ from 'lodash';
 import levenshtein from 'fast-levenshtein';
+import randomString from 'randomstring';
+
 import virtualVim from './src/virtual-vim';
-
-const x = {
-  string: 'x',
-  name: 'delete'
-}
-
-const p = {
-  string: 'p',
-  name: 'put'
-}
+import stringSplice from './src/string-splice';
 
 function generateCommand () {
-  return _.sample([x, p]);
+  return virtualVim.generateCommand();
 }
 
 function generateSolution () {
@@ -30,7 +23,7 @@ function rankGeneration (generation) {
   generation.reduce((accumulatedScore, solution) => {
     solution.rank = 1 - accumulatedScore;
 
-    return solution.rank + solution.score / totalScore;
+    return accumulatedScore + solution.score / totalScore;
   }, 0);
 
   return generation;
@@ -39,7 +32,7 @@ function rankGeneration (generation) {
 function breedChildren (generation, childrenToBreed) {
   //  Where breeding is defined as
   //    Rank all the solutions
-  const rankedGeneration = rankGeneration(generation);;
+  const rankedGeneration = rankGeneration(generation);
 
   function breed () {
     //  Select a parent
@@ -69,8 +62,8 @@ function breedChildren (generation, childrenToBreed) {
     const firstParentCrossoverIndex = _.random(0, firstParent.length - 1);
     const secondParentCrossoverIndex = _.random(0, secondParent.length - 1);
 
-    const firstParentCommand = firstParent[firstParentCrossoverIndex];
-    const secondParentCommand = secondParent[secondParentCrossoverIndex];
+    let firstParentCommand = firstParent[firstParentCrossoverIndex];
+    let secondParentCommand = secondParent[secondParentCrossoverIndex];
 
     return [
       firstParent.map((command, index) => index === firstParentCrossoverIndex ? secondParentCommand : command),
@@ -79,6 +72,53 @@ function breedChildren (generation, childrenToBreed) {
   }
 
   return _.flatten(_.range(childrenToBreed / 2).map(breed));
+}
+
+function mutateString (string) {
+  const indexToMutate = _.random(string.length - 1);
+
+  const newChar = randomString.generate({
+    length: 1,
+    charset: 'alphabetic',
+    capitalization: 'lowercase'
+  });
+
+  const [newString] = stringSplice(string, indexToMutate, 1, newChar);
+
+  return newString;
+}
+
+function mutateCommand (command) {
+  if (command.type === 'i') {
+    const mutatedString = mutateString(command.stringToInsert);
+
+    return Object.assign({}, command, {
+      stringToInsert: mutatedString,
+      string: `i${mutatedString}<Esc>`
+    });
+  }
+
+  return command;
+}
+
+function mutate (solution) {
+  if (false) {
+    return solution;
+  }
+
+  const approach = _.sample(['mutateNode']);
+
+  if (approach === 'mutateNode') {
+    const nodeIndexToMutate = _.random(solution.length - 1);
+
+    return solution.map((command, index) => {
+      if (index !== nodeIndexToMutate) {
+        return command;
+      }
+
+      return mutateCommand(command);
+    });
+  }
 }
 
 // takes a previous generation and returns a new generation
@@ -99,24 +139,17 @@ function evolve (fitnessFunction, populationSize) {
       solution.score = fitnessFunction(solution);
     });
 
-
     const sortedGeneration = _.sortBy(generation, 'score');
-
     const topSolutions = sortedGeneration.slice(0, populationSize / 4);
-    const children = breedChildren(sortedGeneration, populationSize / 2);
+
+    const children = breedChildren(sortedGeneration, populationSize / 2).map(mutate);
     const newSolutions = _.range(populationSize / 4).map(generateSolution);
 
-    return topSolutions.concat(children, newSolutions);
+    return topSolutions.concat(children, newSolutions)
   };
 }
 
-export default function golf (input, output, populationSize=10, generations=100) {
-  // Given an input string and an output string
-  //
-  // And
-  //    a population size: int
-  //    a number of generations: int
-  //
+export default function golf (input, output, populationSize = 128, generations = 100) {
   function fitness (solution) {
     const solutionOutput = virtualVim({solution, input});
 
@@ -125,12 +158,6 @@ export default function golf (input, output, populationSize=10, generations=100)
 
   const population = _.range(populationSize).map(generateSolution);
 
-  // Generate a starting population
-  //   Map the size of the population
-  //    A solution is a series of inputs (of random size)
-  //      An input is either
-  //        'x': delete
-  //        'p': put
   const solutions = _.range(generations).reduce(evolve(fitness, populationSize), population);
 
   return _.minBy(solutions, fitness).map(command => command.string).join('');
