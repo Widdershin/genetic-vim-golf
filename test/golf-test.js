@@ -19,8 +19,14 @@ describe('golf', () => {
     it(`returns '${test.expected}' to transform '${test.input}' to '${test.output}'`, (done) => {
       const stream = golf(test.input, test.output);
 
+      let passingCount = 0;
+
       stream.filter(result => {
-        return result.result === test.output;
+        if (result.result === test.output) {
+          passingCount++;
+        }
+
+        return passingCount > 5;
       }).take(1).addListener({
         next: (result) => {
           assert.equal(result.solution, test.expected);

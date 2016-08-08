@@ -100,11 +100,11 @@ function mutateCommand (command) {
 }
 
 function mutate (solution) {
-  if (false) {
+  if (Math.random() < 0.5) {
     return solution;
   }
 
-  const approach = _.sample(['mutateNode']);
+  const approach = _.sample(['mutateNode', 'removeNode']);
 
   if (approach === 'mutateNode') {
     const nodeIndexToMutate = _.random(solution.length - 1);
@@ -116,6 +116,16 @@ function mutate (solution) {
 
       return mutateCommand(command);
     });
+  } else if (approach === 'removeNode') {
+    const clonedSolution = solution.slice();
+
+    const nodeIndexToMutate = _.random(solution.length - 1);
+
+    clonedSolution.splice(nodeIndexToMutate, 1);
+
+    return clonedSolution;
+  } else {
+    throw new Error('Unhandled approach: ' + approach);
   }
 }
 
