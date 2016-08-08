@@ -16,8 +16,20 @@ const TESTS = [
 
 describe('golf', () => {
   TESTS.forEach(test => {
-    it(`returns '${test.expected}' to transform '${test.input}' to '${test.output}'`, () => {
-      assert.equal(golf(test.input, test.output).toString(), test.expected);
+    it(`returns '${test.expected}' to transform '${test.input}' to '${test.output}'`, (done) => {
+      const stream = golf(test.input, test.output);
+
+      stream.filter(result => {
+        return result.result === test.output;
+      }).take(1).addListener({
+        next: (result) => {
+          assert.equal(result.solution, test.expected);
+          done();
+        },
+
+        error: done,
+        complete: () => {}
+      });
     });
   });
 });

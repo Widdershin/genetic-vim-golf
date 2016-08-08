@@ -1,9 +1,11 @@
 import _ from 'lodash';
 import levenshtein from 'fast-levenshtein';
-import randomString from 'randomstring';
 
+import randomString from './src/random-string';
 import virtualVim from './src/virtual-vim';
 import stringSplice from './src/string-splice';
+
+import xs from 'xstream';
 
 function generateCommand () {
   return virtualVim.generateCommand();
@@ -77,11 +79,7 @@ function breedChildren (generation, childrenToBreed) {
 function mutateString (string) {
   const indexToMutate = _.random(string.length - 1);
 
-  const newChar = randomString.generate({
-    length: 1,
-    charset: 'alphabetic',
-    capitalization: 'lowercase'
-  });
+  const newChar = randomString(1);
 
   const [newString] = stringSplice(string, indexToMutate, 1, newChar);
 
@@ -149,7 +147,7 @@ function evolve (fitnessFunction, populationSize) {
   };
 }
 
-export default function golf (input, output, populationSize = 64, generations = 1000) {
+export default function golf (input, output, populationSize = 64) {
   function fitness (solution) {
     const solutionOutput = virtualVim({solution, input});
 
@@ -158,7 +156,40 @@ export default function golf (input, output, populationSize = 64, generations = 
 
   const population = _.range(populationSize).map(generateSolution);
 
-  const solutions = _.range(generations).reduce(evolve(fitness, populationSize), population);
+  let stopped = false;
+  let _population = population;
+  let id = 0;
+  let generation = 0;
 
-  return _.minBy(solutions, fitness).map(command => command.string).join('');
+  const producer = {
+    start: function (listener) {
+      function go () {
+        const newPopulation = evolve(fitness, populationSize)(_population);
+
+        _population = newPopulation;
+
+        const bestSolution = _.minBy(_population, fitness)
+        const bestSolutionString = bestSolution.map(command => command.string).join('');
+
+        const result = virtualVim({solution: bestSolution, input});
+
+        listener.next({solution: bestSolutionString, result, generation});
+
+        generation += 1;
+
+        if (!stopped) {
+          setInterval(go, 0);
+        }
+      }
+
+      id = setInterval(go, 0);
+    },
+
+    stop: function () {
+      stopped = true;
+      clearInterval(id);
+    }
+  };
+
+  return xs.create(producer);
 }

@@ -1,13 +1,9 @@
 import _ from 'lodash';
-import randomString from 'randomstring';
+import randomString from './random-string';
 import stringSplice from './string-splice';
 
 function makeRandomString () {
-  return randomString.generate({
-    length: 5,
-    charset: 'alphabetic',
-    capitalization: 'lowercase'
-  });
+  return randomString(5)
 }
 
 const x = {
