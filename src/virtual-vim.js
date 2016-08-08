@@ -30,6 +30,16 @@ const j = {
   name: 'down'
 }
 
+function r () {
+  const replaceWith = randomString(1);
+
+  return {
+    type: 'r',
+    string: `r${replaceWith}`,
+    replaceWith
+  };
+}
+
 function i () {
   const stringToInsert = makeRandomString();
 
@@ -40,6 +50,12 @@ function i () {
     name: 'insert'
   }
 }
+
+const $ = {
+  type: '$',
+  string: '$',
+  name: 'endOfLine'
+};
 
 const commands = {
   x (state) {
@@ -88,6 +104,12 @@ const commands = {
   l (state) {
     state.cursor.column += 1;
 
+    const line = currentLine(state);
+
+    if (state.cursor.column > line.length - 1) {
+      state.cursor.column = line.length - 1;
+    }
+
     return state;
   },
 
@@ -98,6 +120,30 @@ const commands = {
       state.cursor.row = state.text.length - 1;
     }
 
+    const line = currentLine(state);
+
+    if (state.cursor.column > line.length - 1) {
+      state.cursor.column = line.length - 1;
+    }
+
+    return state;
+  },
+
+  r (state, command) {
+    const line = currentLine(state);
+
+    const [newText] = stringSplice(line, state.cursor.column, 1, command.replaceWith);
+
+    state.text.splice(state.cursor.row, 1, newText);
+
+    return state;
+  },
+
+  $ (state) {
+    const line = currentLine(state);
+
+    state.cursor.column = line.length - 1;
+
     return state;
   }
 };
@@ -107,7 +153,7 @@ function executeCommand (state, command) {
 }
 
 function generateCommand () {
-  return _.sample([x, p, i(), l, j]);
+  return _.sample([x, p, i(), l, j, r(), $]);
 }
 
 function currentLine (state) {

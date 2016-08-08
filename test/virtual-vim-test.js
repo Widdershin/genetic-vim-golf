@@ -162,4 +162,36 @@ This challenge is just a simple movement and entering text at a certain place.
 
     assert.equal(virtualVim({solution, input}), expectedOutput);
   });
+
+  it('handles replace', () => {
+    const input = 'test';
+    const expectedOutput = 'best';
+
+    const solution = [
+      {
+        type: 'r',
+        replaceWith: 'b'
+      }
+    ];
+
+    assert.equal(virtualVim({solution, input}), expectedOutput);
+  });
+
+  it('handles $', () => {
+    const input = 'test';
+    const expectedOutput = 'tesz';
+
+    const solution = [
+      {
+        type: '$'
+      },
+
+      {
+        type: 'r',
+        replaceWith: 'z'
+      }
+    ];
+
+    assert.equal(virtualVim({solution, input}), expectedOutput);
+  });
 });
