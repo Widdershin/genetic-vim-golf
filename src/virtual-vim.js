@@ -24,6 +24,12 @@ const l = {
   name: 'right'
 }
 
+const j = {
+  type: 'j',
+  string: 'j',
+  name: 'down'
+}
+
 function i () {
   const stringToInsert = makeRandomString();
 
@@ -37,36 +43,43 @@ function i () {
 
 const commands = {
   x (state) {
-    const [newText, removedChar] = stringSplice(state.text, state.cursor.column, 1);
+    const line = currentLine(state);
 
-    state.text = newText;
+    const [newText, removedChar] = stringSplice(line, state.cursor.column, 1);
+
+    state.text.splice(state.cursor.row, 1, newText);
     state.clipboard = removedChar;
 
     return state;
   },
 
   p (state) {
+    const line = currentLine(state);
+
     const [newText] = stringSplice(
-      state.text,
+      line,
       state.cursor.column + 1,
       0,
       state.clipboard || ''
     );
 
-    state.text = newText;
+    state.text.splice(state.cursor.row, 1, newText);
 
     return state;
   },
 
   i (state, command) {
+    const line = currentLine(state);
+
     const [newText] = stringSplice(
-      state.text,
+      line,
       state.cursor.column,
       0,
       command.stringToInsert
     );
 
-    state.text = newText;
+    state.text.splice(state.cursor.row, 1, newText);
+
     state.cursor.column += command.stringToInsert.length - 1;
 
     return state;
@@ -74,6 +87,16 @@ const commands = {
 
   l (state) {
     state.cursor.column += 1;
+
+    return state;
+  },
+
+  j (state) {
+    state.cursor.row += 1;
+
+    if (state.cursor.row > state.text.length - 1) {
+      state.cursor.row = state.text.length - 1;
+    }
 
     return state;
   }
@@ -84,17 +107,21 @@ function executeCommand (state, command) {
 }
 
 function generateCommand () {
-  return _.sample([x, p, i(), l]);
+  return _.sample([x, p, i(), l, j]);
+}
+
+function currentLine (state) {
+  return state.text[state.cursor.row];
 }
 
 export default function virtualVim ({solution, input}) {
   const state = {
-    text: input,
+    text: input.split('\n'),
     cursor: {row: 0, column: 0},
     clipboard: null
   };
 
-  return solution.reduce(executeCommand, state).text;
+  return solution.reduce(executeCommand, state).text.join('\n');
 }
 
 virtualVim.generateCommand = generateCommand;

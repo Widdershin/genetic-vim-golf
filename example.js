@@ -1,5 +1,5 @@
 import {run} from '@cycle/xstream-run';
-import {makeDOMDriver, input, div, pre} from '@cycle/dom';
+import {makeDOMDriver, textarea, div, pre} from '@cycle/dom';
 import xs from 'xstream';
 import golf from './index';
 import worker from './worker';
@@ -36,12 +36,12 @@ function view (golf) {
     div([
       div([
         `Start text:`,
-        input('.start-text')
+        textarea('.start-text')
       ]),
 
       div([
         `Target text:`,
-        input('.target-text')
+        textarea('.target-text')
       ]),
 
       div([
