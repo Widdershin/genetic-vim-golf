@@ -10,7 +10,8 @@ const TESTS = [
   {input: 'ab', output: 'baaa', expected: 'xppp'},
   {input: 'aaa', output: '', expected: 'xxx'},
   {input: 'ba', output: 'abbb', expected: 'xppp'},
-  {input: '', output: 'hello', expected: 'ihello<Esc>'}
+  {input: '', output: 'hello', expected: 'ihello<Esc>'},
+  {input: '--', output: '-hello-', expected: 'lihello<Esc>'}
 ];
 
 describe('golf', () => {

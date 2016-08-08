@@ -51,4 +51,56 @@ describe('virtual vim', () => {
 
     assert.equal(virtualVim({solution, input}), 'hell');
   });
+
+  it('handles the l key', () => {
+    const solution = [
+      {
+        type: 'l'
+      },
+
+      {
+        type: 'i',
+        stringToInsert: 'hello'
+      }
+    ];
+
+    const input = '--';
+
+    assert.equal(virtualVim({solution, input}), '-hello-');
+  });
+
+  it('handles the l key', () => {
+    const solution = [
+      {
+        type: 'l'
+      },
+
+      {
+        type: 'i',
+        stringToInsert: 'hello'
+      }
+    ];
+
+    const input = '';
+
+    assert.equal(virtualVim({solution, input}), 'hello');
+  });
+
+  it('handles the i key end point', () => {
+    const solution = [
+      {
+        type: 'i',
+        stringToInsert: 'hello'
+      },
+
+      {
+        type: 'i',
+        stringToInsert: 'hello'
+      }
+    ];
+
+    const input = '';
+
+    assert.equal(virtualVim({solution, input}), 'hellhelloo');
+  });
 });

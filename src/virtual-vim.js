@@ -2,6 +2,14 @@ import _ from 'lodash';
 import randomString from 'randomstring';
 import stringSplice from './string-splice';
 
+function makeRandomString () {
+  return randomString.generate({
+    length: 5,
+    charset: 'alphabetic',
+    capitalization: 'lowercase'
+  });
+}
+
 const x = {
   type: 'x',
   string: 'x',
@@ -14,12 +22,10 @@ const p = {
   name: 'put'
 }
 
-function makeRandomString () {
-  return randomString.generate({
-    length: 5,
-    charset: 'alphabetic',
-    capitalization: 'lowercase'
-  });
+const l = {
+  type: 'l',
+  string: 'l',
+  name: 'right'
 }
 
 function i () {
@@ -68,6 +74,12 @@ const commands = {
     state.cursor.column += command.stringToInsert.length - 1;
 
     return state;
+  },
+
+  l (state) {
+    state.cursor.column += 1;
+
+    return state;
   }
 };
 
@@ -76,7 +88,7 @@ function executeCommand (state, command) {
 }
 
 function generateCommand () {
-  return _.sample([x, p, i()]);
+  return _.sample([x, p, i(), l]);
 }
 
 export default function virtualVim ({solution, input}) {

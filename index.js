@@ -149,7 +149,7 @@ function evolve (fitnessFunction, populationSize) {
   };
 }
 
-export default function golf (input, output, populationSize = 128, generations = 100) {
+export default function golf (input, output, populationSize = 64, generations = 1000) {
   function fitness (solution) {
     const solutionOutput = virtualVim({solution, input});
 
