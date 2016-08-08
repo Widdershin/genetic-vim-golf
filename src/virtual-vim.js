@@ -3,7 +3,7 @@ import randomString from './random-string';
 import stringSplice from './string-splice';
 
 function makeRandomString () {
-  return randomString(5)
+  return randomString(_.random(1, 10))
 }
 
 const x = {

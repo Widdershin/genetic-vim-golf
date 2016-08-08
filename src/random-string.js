@@ -1,9 +1,9 @@
 import _ from 'lodash';
 
-const letters = 'abcdefghijklmnopqrstuvwyxz';
+const letters = 'abcdefghijklmnopqrstuvwyxz ';
 
 function randomLetter () {
-  const randomLetterIndex = Math.floor(Math.random() * (letters.length - 1));
+  const randomLetterIndex = Math.floor(Math.random() * (letters.length));
 
   return letters[randomLetterIndex];
 }

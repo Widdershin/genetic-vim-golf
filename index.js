@@ -117,6 +117,10 @@ function mutate (solution) {
       return mutateCommand(command);
     });
   } else if (approach === 'removeNode') {
+    if (solution.length === 1) {
+      return solution;
+    }
+
     const clonedSolution = solution.slice();
 
     const nodeIndexToMutate = _.random(solution.length - 1);
@@ -125,7 +129,7 @@ function mutate (solution) {
 
     return clonedSolution;
   } else {
-    throw new Error('Unhandled approach: ' + approach);
+    throw new Error('Unhandled approach: ' + approach)
   }
 }
 

@@ -21,7 +21,7 @@
   },
   "scripts": {
     "start": "budo example.js:bundle.js --live -- -t babelify",
-    "test": "mocha --compilers js:babel-core/register",
+    "test": "mocha --compilers js:babel-core/register -R min",
     "autotest": "mocha --compilers js:babel-core/register --watch -R min"
   },
   "repository": {

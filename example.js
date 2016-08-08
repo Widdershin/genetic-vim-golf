@@ -69,14 +69,16 @@ function main ({DOM, Golf}) {
   const targetText$ = DOM
     .select('.target-text')
     .events('change')
-    .map(ev => ev.target.value)
-    .startWith('');
+    .map(ev => ev.target.value);
 
   const golfInput$ = xs
     .combine(startText$, targetText$);
 
+  const solution$ = Golf
+    .startWith({result: '', generation: 0, solution: ''});
+
   return {
-    DOM: Golf.map(view),
+    DOM: solution$.map(view),
     Golf: golfInput$
   };
 }
