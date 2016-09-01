@@ -51,6 +51,28 @@ function i () {
   }
 }
 
+function a () {
+  const stringToAppend = makeRandomString();
+
+  return {
+    type: 'a',
+    string: `a${stringToAppend}<Esc>`,
+    stringToAppend,
+    name: 'append'
+  }
+}
+
+function A () {
+  const stringToAppend = makeRandomString();
+
+  return {
+    type: 'A',
+    string: `A${stringToAppend}<Esc>`,
+    stringToAppend,
+    name: 'appendToEndOfLine'
+  }
+}
+
 const $ = {
   type: '$',
   string: '$',
@@ -145,6 +167,16 @@ const commands = {
     state.cursor.column = line.length - 1;
 
     return state;
+  },
+
+  a (state, command) {
+    state.cursor.column++;
+
+    return commands.i(state, {type: 'i', stringToInsert: command.stringToAppend});
+  },
+
+  A (state, command) {
+    return commands.a(commands.$(state), command);
   }
 };
 
@@ -153,7 +185,7 @@ function executeCommand (state, command) {
 }
 
 function generateCommand () {
-  return _.sample([x, p, i(), l, j, r(), $]);
+  return _.sample([x, p, i(), l, j, r(), $, a(), A()]);
 }
 
 function currentLine (state) {

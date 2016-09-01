@@ -96,6 +96,24 @@ function mutateCommand (command) {
     });
   }
 
+  if (command.type === 'a') {
+    const mutatedString = mutateString(command.stringToAppend);
+
+    return Object.assign({}, command, {
+      stringToAppend: mutatedString,
+      string: `a${mutatedString}<Esc>`
+    });
+  }
+
+  if (command.type === 'A') {
+    const mutatedString = mutateString(command.stringToAppend);
+
+    return Object.assign({}, command, {
+      stringToAppend: mutatedString,
+      string: `A${mutatedString}<Esc>`
+    });
+  }
+
   return command;
 }
 
@@ -161,7 +179,7 @@ function evolve (fitnessFunction, populationSize) {
   };
 }
 
-export default function golf (input, output, populationSize = 64) {
+export default function golf (input, output, populationSize = 128) {
   function fitness (solution) {
     const solutionOutput = virtualVim({solution, input});
 

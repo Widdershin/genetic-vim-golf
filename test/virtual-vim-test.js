@@ -194,4 +194,32 @@ This challenge is just a simple movement and entering text at a certain place.
 
     assert.equal(virtualVim({solution, input}), expectedOutput);
   });
+
+  it('handles a', () => {
+    const input = 't';
+    const expectedOutput = 'test';
+
+    const solution = [
+      {
+        type: 'a',
+        stringToAppend: 'est'
+      }
+    ];
+
+    assert.equal(virtualVim({solution, input}), expectedOutput);
+  });
+
+  it('handles A', () => {
+    const input = 'te';
+    const expectedOutput = 'test';
+
+    const solution = [
+      {
+        type: 'A',
+        stringToAppend: 'st'
+      }
+    ];
+
+    assert.equal(virtualVim({solution, input}), expectedOutput);
+  });
 });
