@@ -15,6 +15,7 @@
     "@cycle/xstream-run": "^3.0.4",
     "babel-cli": "^6.11.4",
     "babelify": "^7.3.0",
+    "budo": "^11.5.0",
     "mocha": "^2.5.3",
     "onchange": "^2.5.0",
     "random-strings": "0.0.1",
